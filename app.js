@@ -11,12 +11,12 @@ var SpotifyWebApi = require('spotify-web-api-node');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
-    clientId : procee.env.SPOTIFY_KEY,
-    clientSecret : procee.env.SPOTIFY_SECRET,
+    clientId : process.env.SPOTIFY_KEY,
+    clientSecret : process.env.SPOTIFY_SECRET,
     redirectUri : 'http://www.example.com/callback'
 });
 
-spotifyApi.setAccessToken(procee.env.SPOTIFY_TOKEN);
+spotifyApi.setAccessToken(process.env.SPOTIFY_TOKEN);
 
 // Set an access token.
 spotifyApi.clientCredentialsGrant()
@@ -34,10 +34,10 @@ spotifyApi.clientCredentialsGrant()
 // Twitter API
 var twit = require('twit');
 var tw = new twit({
-    consumer_key: procee.env.TWITTER_KEY,
-    consumer_secret: procee.env.TWITTER_SECRET,
-    access_token: procee.env.TWITTER_TOKEN,
-    access_token_secret:procee.env.TWITTER_TOKEN_SECRET
+    consumer_key: process.env.TWITTER_KEY,
+    consumer_secret: process.env.TWITTER_SECRET,
+    access_token: process.env.TWITTER_TOKEN,
+    access_token_secret: process.env.TWITTER_TOKEN_SECRET
 });
 
 // use public folder
