@@ -2,8 +2,9 @@ var https = require('https');
 var express = require('express');
 var app = express();
 const hostname = '127.0.0.1';
-const port = 3000;
 
+
+const PORT = process.env.PORT || 3000;
 
 
 // Spotify API
@@ -276,7 +277,7 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
 });
 
 
-app.listen(port, function () {
-    console.log('Express app listening at http://' + hostname + ':' + port + '/');
+app.listen(PORT, function () {
+    console.log('Express app listening at http://' + hostname + ':' + PORT + '/');
 });
 
