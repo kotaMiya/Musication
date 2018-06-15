@@ -6,18 +6,17 @@ const port = 3000;
 
 
 
-
 // Spotify API
 var SpotifyWebApi = require('spotify-web-api-node');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
-    clientId : 'f276c2bb1e9942b79907de2e43095722',
-    clientSecret : 'aef45086f56347a8b9a4c957b500b578',
+    clientId : procee.env.SPOTIFY_KEY,
+    clientSecret : procee.env.SPOTIFY_SECRET,
     redirectUri : 'http://www.example.com/callback'
 });
 
-spotifyApi.setAccessToken('BQD-EpRdanhqPzzLnDdW6Q5AQ4uaTxYn5f-k2PfH3kPneJsyfaVh4bD_9V0ZYx0EJn2xBaN8ebmwqEyKkV13HwCfH-6mpLBABEkZ3bNcrxZlJVAqRGdZ5mLmFho-_azK5gGsKKVcU_9hE5bE4T_H7VpNRyvEJP6yY3afjHLaPJmNFnv2F5Q&refresh_token=AQDNXEcJkb5MkkuevMkQdx20AovCP8g0AqLnxnvCQGx4nhXsksfk1CD-MNbmNPrnWjtuHdVap0T6-brJgcep3nuvbGDwhFNBB9-t-oVDgiN0CshY_4H_s0LSP2BzoEjExPo');
+spotifyApi.setAccessToken(procee.env.SPOTIFY_TOKEN);
 
 // Set an access token.
 spotifyApi.clientCredentialsGrant()
@@ -35,15 +34,17 @@ spotifyApi.clientCredentialsGrant()
 // Twitter API
 var twit = require('twit');
 var tw = new twit({
-    consumer_key: 'eEICXPXVbzaIF7B1BI6tg5KsL',
-    consumer_secret: 'dvWEhnetHOw8huZHdwQD0kzXiuGiDX2YgRZagO0jsPCZFRThzM',
-    access_token: '391443422-8ZIdgYwaSZ9Z87QVCvALpHQ5816QdsU5iMjjhBBY',
-    access_token_secret:'6KIdOhGTzAVkKeeNEyogdFxCICYEMsBpQVDT8EZiCvdU6'
+    consumer_key: procee.env.TWITTER_KEY,
+    consumer_secret: procee.env.TWITTER_SECRET,
+    access_token: procee.env.TWITTER_TOKEN,
+    access_token_secret:procee.env.TWITTER_TOKEN_SECRET
 });
 
-
+// use public folder
 app.use(express.static((__dirname, 'public')));
 
+
+// home route
 app.get('/', function (req, res) {
 
     var header = '<!DOCTYPE html>' +
@@ -54,6 +55,7 @@ app.get('/', function (req, res) {
         '<link rel="stylesheet" type="text/css" href="/css/mycss.css">' +
         '</head>';
 
+    // when the button is clicked, go to results page
     var body = '<body><div class="container"><div class="top-content">' +
                '<h1>Musication</h1>' +
                '<h3>Meet awesome music♪</h3>' +
@@ -77,12 +79,18 @@ var artistID = [];
 var artist_name = "";
 var image = "";
 
+
+// routing result page
 app.get('/search/:artistName', function (req, res) {
 
+    // get the input from first page
     var getArtistName = req.params.artistName;
 
+    // spotify api method, get artist data from name.
     spotifyApi.searchArtists(getArtistName)
         .then(function(data) {
+
+            console.log(data.body.artists);
 
             var header = '<!DOCTYPE html>' +
                 '<html>' +
@@ -104,6 +112,8 @@ app.get('/search/:artistName', function (req, res) {
             artistID = [];
             var path = req.protocol + '://' + req.headers.host + req.url + '/track';
 
+
+            // if input name matches with any artists, show the list of artists.
             if (data.body.artists.items.length === 0) {
                 var message = "There is no artists";
                 all = header + body  + message + footer;
@@ -139,9 +149,7 @@ app.get('/search/:artistName', function (req, res) {
         });
 });
 
-var test = "this is the test";
-
-
+// routing individual artist page
 app.get('/search/:artistName/track/:aritstID', function(req, res) {
 
     var whole_url = req.url;
@@ -150,6 +158,8 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
     var current_artist_image = "";
     var spotify_url = "";
 
+
+    // spotify method for specific artist.
     spotifyApi.getArtist(current_artist_id[4])
         .then(function(data) {
             current_artist_name = data.body.name;
@@ -160,8 +170,11 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
         });
 
 
+    // spotify method for tracks
     spotifyApi.getArtistTopTracks(current_artist_id[4], 'GB')
         .then(function(data) {
+
+            console.log(data.body.tracks);
 
             var header = '<!DOCTYPE html>' +
                 '<html>' +
@@ -174,7 +187,7 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
                 '</head>';
 
 
-
+            // when this page is loaded, call map function
             var body = '<body onload="initMap()"><div class="container"><div class="main">' +
                        '<h1><a href="/">Musication</a></h1>' +
                        '<div class="individual-page">' +
@@ -185,7 +198,6 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
             var footer = '<footer><h5>By Kota Miyamoto, n9567496</h5></footer></div></body></html>';
 
             var testMap = '<div id="sample"></div>';
-
 
 
             var tracks = "<div class='chunk-tracks'>";
@@ -205,7 +217,7 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
                     if (data.body.tracks[i].preview_url === null) {
                         tracks += data.body.tracks[i].name + '<br>';
                     } else {
-                        tracks += '<a href="' + data.body.tracks[i].preview_url + '">' + data.body.tracks[i].name + '</a>';
+                        tracks += '<a href="https://open.spotify.com/embed?uri=' + data.body.tracks[i].uri + '">' + data.body.tracks[i].name + '</a>';
                         tracks += '<br>';
                     }
                 }
@@ -217,10 +229,19 @@ app.get('/search/:artistName/track/:aritstID', function(req, res) {
 
             var twitter_location = [];
 
-            tw.get('search/tweets', { q: '#nowPlaying ' + current_artist_name, count: 30 },
+
+            // twitter function, get 500 tweets with hash tag and name.
+            tw.get('search/tweets', { q: '#nowPlaying ' + current_artist_name, count: 500 },
                 function(err, data, response) {
 
                     var c = 0;
+
+                    console.log(data.statuses);
+
+
+                    if (data.statuses.length === 0) {
+                        tweets = '<h3 class="no-tweets">There is no tweets</h3>';
+                    }
 
                     for (var i = 0; i < data.statuses.length; i++) {
                         if (data.statuses[i].text !== undefined) {

@@ -139,3 +139,7 @@ footer h5 {
     width: 80px;
     height: 80px;
 }
+
+.no-tweets {
+    clear: left;
+}

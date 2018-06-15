@@ -1,7 +1,3 @@
-
-
-
-
 function searchArtist() {
     var artistName = document.getElementById("artist").value;
 
@@ -12,7 +8,6 @@ function searchArtist() {
     }
 
 }
-
 
 var map;
 var addresses = [
@@ -29,11 +24,6 @@ function initMap() {
 
     var location_name = [];
 
-    var te = 0;
-
-
-
-
     var location_length = document.getElementsByTagName('input').length;
 
     for (var i = 0; i < location_length; i++) {
@@ -41,8 +31,6 @@ function initMap() {
             location_name[i] = document.getElementById('location' + i).value;
         }
     }
-
-
 
     geocoder.geocode({'address': 'Brisbane'}, function (results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
